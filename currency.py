@@ -4,6 +4,7 @@ import plotly.express as px
 import pandas as pd
 from bs4 import BeautifulSoup
 
+
 class Currency:
     def __init__(self, country, start_day, start_month, start_year, end_day,
                  end_month, end_year):
@@ -106,16 +107,15 @@ class Currency:
                 currency_info['Страна'], currency_info['Валюта'],
                 currency_info['Код'], currency_info['Номер']))
         self.connection.commit()
+        self.get_data_page()
 
+    def get_data_page(self):
         country_code = self.currency.get(self.country)
         if country_code is None:
             return {"error": "Country not found in currency list"}
 
         url = f"https://www.finmarket.ru/currency/rates/?id=10148&pv=1&cur={country_code}&bd={self.start_day}&bm={self.start_month}&by={self.start_year}&ed={self.end_day}&em={self.end_month}&ey={self.end_year}&x=23&y=8#archive"
         self.page = requests.get(url)
-        return self.get_data_page()
-
-    def get_data_page(self):
         soup = BeautifulSoup(self.page.text, "lxml")
         line = soup.find(class_="center_column").find("tbody")
         self.data = []
